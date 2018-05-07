@@ -20,11 +20,12 @@ chmod -R 777 /tmp/hls/
 cd ./install_files
 tar -zxvf ./nginx-1.9.15.tar.gz
 unzip ./nginx-rtmp-module-master.zip
-cd ..
 
 #Compile Nginx with the RTMP Module
-./install_files/nginx-1.9.15/configure --with-http_ssl_module --with-http_stub_status_module --add-module=./install_files/nginx-rtmp-module-master
+cd nginx-1.9.15/
+./configure --with-http_ssl_module --with-http_stub_status_module --add-module=../nginx-rtmp-module-master
 make && make install
+cd .. && cd ..
 
 #Install and apply Nginx startup entry
 mv ./install_files/nginx /etc/init.d/nginx
