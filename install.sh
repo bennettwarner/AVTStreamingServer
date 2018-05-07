@@ -53,3 +53,4 @@ crontab -l > mycron
 echo "* * * * * /usr/local/bin/upload_rate >/dev/null 2>&1" >> mycron
 crontab mycron
 rm mycron
+echo "Install complete"
