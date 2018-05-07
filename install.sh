@@ -2,60 +2,50 @@
 # Bennett Warner | Last Updated: May 2018
 #########################################
 
+#Check if installer is running under root
+if [[ $EUID -ne 0 ]]; then
+   echo "This script must be run as root"
+   exit 1
+fi
+
 #Updates repositories and installs dependancies
 apt-get update && apt-get upgrade -y
 apt-get install build-essential libpcre3 libpcre3-dev libssl-dev nload unzip -y
-
-# Create and move into a temp directory to build programs in
-mkdir /root/working
-cd /root/working/
-
-#Download Nginx and its RTMP module
-wget http://nginx.org/download/nginx-1.9.15.tar.gz
-wget https://github.com/arut/nginx-rtmp-module/archive/master.zip
-
-#Uncompress both files and move into the Nginx folder
-tar -zxvf nginx-1.9.15.tar.gz
-unzip master.zip
-cd nginx-1.9.15/
-
-#Prepare to compile Nginx with the RTMP Module
-./configure --with-http_ssl_module --with-http_stub_status_module --add-module=../nginx-rtmp-module-master
 
 # Create and set permissions on a directory to store HLS Video Segments
 mkdir /tmp/hls
 chmod -R 777 /tmp/hls/
 
-#Compile Nginx with the RTMP Module
-make
-make install
+#Uncompress both files
+tar -zxvf ./install_files/nginx-1.9.15.tar.gz
+unzip ./install_files/master.zip
 
-#Download and apply Nginx startup entry
-wget https://raw.github.com/JasonGiedymin/nginx-init-ubuntu/master/nginx -O /etc/init.d/nginx
+#Compile Nginx with the RTMP Module
+./install_files/nginx-1.9.15/configure --with-http_ssl_module --with-http_stub_status_module --add-module=./install_files/nginx-rtmp-module-master
+make && make install
+
+#Install and apply Nginx startup entry
+mv ./install_files/nginx /etc/init.d/nginx
 chmod +x /etc/init.d/nginx
 update-rc.d nginx defaults
 service nginx start
 service nginx stop
 
-#Download and set permissions on stats and crossdomain config files
-cd /usr/local/nginx/html/
-wget https://github.com/arut/nginx-rtmp-module/raw/master/stat.xsl
-chmod 755 stat.xsl
-wget http://phxmediagroup.com/code/crossdomain.xml
-chmod 755 crossdomain.xml
+#Install and set permissions on stats and crossdomain config files
+mv ./install_files/stats.xsl /usr/local/nginx/html/
+mv ./install_files/crossdomain.xml /usr/local/nginx/html/
+chmod 755 /usr/local/nginx/html/*
 
-#Download and apply Nginx config file
-cd /usr/local/nginx/conf/
-rm nginx.conf
-wget http://www.phxmediagroup.com/code/nginx.conf
-chmod 755 nginx.conf
+#Install and apply Nginx config file
+rm /usr/local/nginx/conf/nginx.conf
+mv ./install_files/nginx.con /usr/local/nginx/conf/
+chmod 755 /usr/local/nginx/conf/nginx.conf
 service nginx start
 
 #Install cronjob to report upload bandwidth utilization
-cd /root
-wget http://www.phxmediagroup.com/code/upload_rate.sh
-chmod +x ./upload_rate.sh
+chmod +x ./install_files/upload_rate.sh
+mv ./install_files/upload_rate.sh /usr/local/bin/upload_rate
 crontab -l > mycron
-echo "* * * * * /root/upload_rate.sh >/dev/null 2>&1" >> mycron
+echo "* * * * * /usr/local/bin/upload_rate >/dev/null 2>&1" >> mycron
 crontab mycron
 rm mycron
