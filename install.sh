@@ -18,7 +18,7 @@ chmod -R 777 /tmp/hls/
 
 #Uncompress both files
 tar -zxvf ./install_files/nginx-1.9.15.tar.gz
-unzip ./install_files/master.zip
+unzip ./install_files/nginx-rtmp-module-master.zip
 
 #Compile Nginx with the RTMP Module
 ./install_files/nginx-1.9.15/configure --with-http_ssl_module --with-http_stub_status_module --add-module=./install_files/nginx-rtmp-module-master
