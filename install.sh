@@ -36,7 +36,7 @@ service nginx start
 service nginx stop
 
 #Install and set permissions on stats and crossdomain config files
-mv ./install_files/stat.xsl /usr/local/nginx/html/
+mv ./install_files/stat.xls /usr/local/nginx/html/
 mv ./install_files/crossdomain.xml /usr/local/nginx/html/
 chmod 755 /usr/local/nginx/html/*
 
