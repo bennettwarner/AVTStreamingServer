@@ -25,7 +25,8 @@ unzip ./nginx-rtmp-module-master.zip
 cd nginx-1.9.15/
 ./configure --with-http_ssl_module --with-http_stub_status_module --add-module=../nginx-rtmp-module-master
 make && make install
-cd .. && cd ..
+cd ..
+cd ..
 
 #Install and apply Nginx startup entry
 mv ./install_files/nginx /etc/init.d/nginx
@@ -41,7 +42,7 @@ chmod 755 /usr/local/nginx/html/*
 
 #Install and apply Nginx config file
 rm /usr/local/nginx/conf/nginx.conf
-mv ./install_files/nginx.con /usr/local/nginx/conf/
+mv ./install_files/nginx.conf /usr/local/nginx/conf/
 chmod 755 /usr/local/nginx/conf/nginx.conf
 service nginx start
 
